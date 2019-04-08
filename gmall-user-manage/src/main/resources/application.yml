@@ -1,0 +1,29 @@
+
+spring:
+  datasource:
+    username: root
+    password: 123456
+    url: jdbc:mysql://10.211.55.5:3306/gmall?characterEncoding=UTF-8
+  dubbo:
+    application:
+      name: gmall-user-provider
+    registry:
+      protocol: zookeeper
+      address: 10.211.55.5:2181
+    base-package: com.xinxin.gmall
+    protocol:
+      name: dubbo
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+  mapper-locations: classpath:/mapper/*.cfg.xml
+
+server:
+  port: 8070
+
+
+
+#logging:
+#  level:
+#    root: debug

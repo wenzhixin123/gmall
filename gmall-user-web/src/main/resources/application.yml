@@ -1,0 +1,13 @@
+spring:
+  dubbo:
+    application:
+      name: gmall-user-cunsumer
+    registry:
+      protocol: zookeeper
+      address: 10.211.55.5:2181
+    base-package: com.xinxin.gmall
+    protocol:
+      name: dubbo
+server:
+  port: 8080
+
