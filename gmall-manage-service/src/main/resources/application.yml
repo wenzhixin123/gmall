@@ -1,29 +1,29 @@
-
+server:
+  port: 8071
 spring:
   datasource:
+    url: jdbc:mysql://10.211.55.5:3306/gmall?characterEncoding=UTF-8&useSSL=false
     username: root
     password: 123456
-    url: jdbc:mysql://10.211.55.5:3306/gmall?characterEncoding=UTF-8&useSSL=false
   dubbo:
-    application:
-      name: gmall-user-provider
+    protocol:
+      name: dubbo
     registry:
       protocol: zookeeper
       address: 10.211.55.5:2181
     base-package: com.xinxin.gmall
-    protocol:
-      name: dubbo
-
+    application:
+      name: gmall-manage-service
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
-  mapper-locations: classpath:/mapper/*.cfg.xml
-
-server:
-  port: 8070
-
-
+  mapper-locations: classpath:mappers/*.cfg.xml
 
 #logging:
 #  level:
 #    root: debug
+
+
+
+
+
