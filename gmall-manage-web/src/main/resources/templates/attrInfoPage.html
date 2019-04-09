@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div id="dlg" class="easyui-dialog" title="编辑属性" style="width:600px;height:500px;"
+     closed="true"  data-options="iconCls:'icon-save',resizable:true,modal:true" buttons="#bb" >
+    <form id="attrForm">
+        <br/>
+        <label>属性名称:</label>
+        <input  id="attrName" name="attrName" class="easyui-textbox" data-options="" style="width:100px"/>
+        <input  id="attrId" name="attrId" type="hidden"  />
+        <br/><br/>
+    </form>
+    <table id="dg_av" class="easyui-datagrid" title="属性值列表"></table>
+
+</div>
+<div id="bb">
+    <a href="#" class="easyui-linkbutton" onclick="saveAttr()">保存</a>
+    <a href="#" class="easyui-linkbutton" onclick="closeAttr()">关闭</a>
+</div>
+</body>
+<script language="JavaScript">
+    function closeAttr(){
+        $("#dlg").dialog("close");
+    }
+
+    function saveAttr() {
+
+        var attrVal = {};
+        var rows = $("#dg_av").datagrid("getRows");
+
+        $.each(rows,function (index,row) {
+
+            attrVal["attrValueList["+index+"].valueName"] = row.valueName;
+            attrVal["attrValueList["+index+"].id"] = row.id;
+        });
+
+        attrVal["id"] =  $("#attrId").val();
+        attrVal["attrName"] =  $("#attrName").textbox("getText");
+        attrVal["catalog3Id"] =  $("#ctg3ForAttrList").combobox("getValue");
+
+        // console.info(attrVal);
+
+        $.post("saveAttrInfo",attrVal,function (data) {
+            $("#dlg").dialog("close");
+            $("#dg").datagrid("reload");
+        });
+
+    }
+</script>
+
+
+</html>

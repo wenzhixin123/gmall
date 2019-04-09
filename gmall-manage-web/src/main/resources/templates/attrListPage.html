@@ -54,59 +54,35 @@
 
 </body>
 
-<div id="dlg" class="easyui-dialog" title="编辑属性" style="width:600px;height:500px;"
-     closed="true"  data-options="iconCls:'icon-save',resizable:true,modal:true" buttons="#bb" >
-    <form id="attrForm">
-        <br/>
-        <label>属性名称:</label>
-        <input  id="attrName" name="attrName" class="easyui-textbox" data-options="" style="width:100px"/>
-        <input  id="attrId" name="attrId" type="hidden"  />
-        <br/><br/>
-        <table id="dg_av" class="easyui-datagrid" title="属性值列表"></table>
-    </form>
+<!--<div id="dlg" class="easyui-dialog" title="编辑属性" style="width:600px;height:500px;"-->
+     <!--closed="true"  data-options="iconCls:'icon-save',resizable:true,modal:true" buttons="#bb" >-->
+    <!--<form id="attrForm">-->
+        <!--<br/>-->
+        <!--<label>属性名称:</label>-->
+        <!--<input  id="attrName" name="attrName" class="easyui-textbox" data-options="" style="width:100px"/>-->
+        <!--<input  id="attrId" name="attrId" type="hidden"  />-->
+        <!--<br/><br/>-->
+        <!--<table id="dg_av" class="easyui-datagrid" title="属性值列表"></table>-->
+    <!--</form>-->
 
-    <div id="bb">
-        <a href="#" class="easyui-linkbutton" onclick="saveAttr()">保存</a>
-        <a href="#" class="easyui-linkbutton">关闭</a>
-    </div>
-</div>
+    <!--<div id="bb">-->
+        <!--<a href="#" class="easyui-linkbutton" onclick="saveAttr()">保存</a>-->
+        <!--<a href="#" class="easyui-linkbutton">关闭</a>-->
+    <!--</div>-->
+<!--</div>-->
 
+<div th:include="attrInfoPage"></div>
 
 <script language="JavaScript">
-
-    function saveAttr() {
-
-        var attrVal = {};
-        var rows = $("#dg_av").datagrid("getRows");
-
-        $.each(rows,function (index,row) {
-
-            attrVal["attrValueList["+index+"].valueName"] = row.valueName;
-            attrVal["attrValueList["+index+"].id"] = row.id;
-        });
-
-        attrVal["id"] =  $("#attrId").val();
-        attrVal["attrName"] =  $("#attrName").textbox("getText");
-        attrVal["catalog3Id"] =  $("#ctg3ForAttrList").combobox("getValue");
-
-        console.info(attrVal);
-
-        $.post("saveAttrInfo",attrVal,function (data) {
-            $("#dlg").dialog("close");
-            $("#dg").datagrid("reload");
-        });
-
-    }
-
 
     function addAttrInfo(){
         if(!checkBeforeDialog()){
             return ;
         }
         //进系统前先清空
-        $("#attrId").val("");
-        $("#attrName").textbox('clear');
-        $('#dg_av').datagrid({url:''});
+        // $("#attrId").val("");
+        // $("#attrName").textbox('clear');
+        // $('#dg_av').datagrid({url:''});
         // 初始化datagrid
         initAttrValueDatagrid();
 
