@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="spuSaleAttr_dlg" class="easyui-dialog" title="编辑销售属性" style="width:500px;height:400px;"
+     closed="true" data-options="iconCls:'icon-save',resizable:true,modal:true" buttons="#spuSaleAttrBtns">
+    销售属性:
+    <select name="saleAttr" id="saleAttrSelect" data-options="valueField:'id',textField:'name',url:'baseSaleAttrList'" style="width:100px" class="easyui-combobox"></select>
+    <br/><br/>
+    <table id="spuSaleAttrValueDg" data-options="singleSelect:true,method:'get',toolbar:'#spuSaleAttrValueTootbar'" class="easyui-datagrid" title="属性值列表"></table>
+    <div id="spuSaleAttrValueTootbar" style="padding:5px;height:auto">
+        <div style="margin-bottom:5px">
+            <a href="#" id= "spuSaleAttrValueAddBtn" class= "easyui-linkbutton" iconCls="icon-add" onclick="addSpuSaleAttrValue()" plain="true">添加</a>
+            <a href="#" class= "easyui-linkbutton" iconCls= "icon-remove" plain="true" onclick="removeSpuSaleAttrValue()">删除</a>
+        </div>
+    </div>
+</div>
+<div id="spuSaleAttrBtns">
+    <a href="#" class="easyui-linkbutton" onclick="saveSpuSaleAttr()">确定</a>
+    <a href="#" class="easyui-linkbutton" onclick="closeSpuSaleAttr()">关闭</a>
+</div>
+</body>
+<script language="JavaScript">
+    function initSpuSaleAttrDlg(spuId,spuSaleAttr) {
+        $("#spuSaleAttr_dlg").dialog("open");
+        alert("xxx");
+        $('#saleAttrSelect').combobox('reset');
+        alert("xxx");
+        if(spuSaleAttr&&spuSaleAttr.saleAttrId){
+            $('#saleAttrSelect').combobox('select',spuSaleAttr.saleAttrId);
+        }
+        initSpuSaleAttrValueListDatagrid(spuId,spuSaleAttr);
+    }
+    function initSpuSaleAttrValueListDatagrid(spuId,spuSaleAttr) {
+        alert("xxx");
+        var spuSaleAttrValueDg = $("#spuSaleAttrValueDg").datagrid({url:""});
+        spuSaleAttrValueDg.datagrid('loadData',{total:0,rows:[]});
+        spuSaleAttrValueDg.datagrid({
+            idField:'saleAttrId',
+            columns:[[
+                {field:'id',title:'销售属性值ID',width:"25%"},
+                {field:'saleAttrId',title:'销售属性ID',hidden:true},
+                {field:'saleAttrValueName',title:'销售属性值名称',width:"75%",editor:{type:'validatebox',options:{required:true}}}
+            ]],
+            onDblClickRow:function(rowIndex,rowData) {
+                //双击开启编辑行
+                spuSaleAttrValueDg.datagrid("beginEdit", rowIndex);
+                //设定当失去焦点时,退出编辑状态
+                var saleAttrValueName = rowData.saleAttrValueName;
+                $("input.datagrid-editable-input").val(saleAttrValueName).bind("blur",function(evt){
+                    spuSaleAttrValueDg.datagrid('endEdit',rowIndex);
+                });
+            }
+        });
+        if(spuSaleAttr && spuSaleAttr.spuSaleAttrValueJson && spuSaleAttr.spuSaleAttrValueJson != ""){
+            spuSaleAttrValueDg.datagrid("loadData",spuSaleAttr.spuSaleAttrValueJson);
+        }
+
+    }
+    function saveSpuSaleAttr() {
+        //将数据缓存到销售属性页面
+        var spuSaleAttrValueJson = $("#spuSaleAttrValueDg").datagrid("getData");
+        var saleAttrId = $("#saleAttrSelect").combobox("getValue");
+        var saleAttrName = $("#saleAttrSelect").combobox("getText");
+
+        //删除重复的行数据
+        var rowDel = $("#spuSaleAttrDg").datagrid("getRowIndex",saleAttrId);//父页面是以销售属性作为行号
+        if(rowDel >= 0){
+            $("#spuSaleAttrDg").datagrid("deleteRow",rowDel);
+        }
+
+
+        $("#spuSaleAttrDg").datagrid("appendRow",{saleAttrId:saleAttrId,saleAttrName:saleAttrName,spuSaleAttrValueJson:spuSaleAttrValueJson});
+
+        $("#spuSaleAttr_dlg").dialog("close");
+    }
+    function closeSpuSaleAttr() {
+        $("#spuSaleAttr_dlg").dialog("close");
+    }
+    function addSpuSaleAttrValue() {
+        $("#spuSaleAttrValueDg").datagrid("appendRow",{id:"",name:""});
+
+    }
+    function removeSpuSaleAttrValue() {
+        var rows = $("#spuSaleAttrValueDg").datagrid("getSelected");
+        var index;
+        if(!rows){
+            index = $("#spuSaleAttrValueDg").datagrid("getRowIndex",rows);
+        }
+        $("#spuSaleAttrValueDg").datagrid("deleteRow",index);
+    }
+
+</script>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="spu_dlg" class="easyui-dialog" title="编辑属性" style="width:520px;height:700px;"
+     closed="true"  data-options="iconCls:'icon-save',resizable:true,modal:true" buttons="#spuBtns" >
+    <form id="spuForm">
+        <br/>
+        <label>SPU名称:</label>
+        <input id="spuName" name="spuName" class="easyui-textbox" style="width:300px;"/>
+        <br/><br/>
+        <input id="description" name="description" class="easyui-textbox" style="width:500px;height:100px"
+               data-options="multiline:true"/>
+        <br/><br/>
+        <!-- 商品图片列表-->
+        <table id="spuImgDg" class="easyui-datagrid" title="商品图片列表"
+               data-options="singleSelect:true,method:'get',toolbar:'#spuImgTootbar'">
+        </table>
+        <div id="spuImgTootbar" style="padding:5px;height:auto">
+            <div style="margin-bottom:5px;">
+                <a href="#" id="spuImgAdd" class="easyui-linkbutton" iconCls="icon-add" plain="true">添加图片</a>
+                <a href="#" id="spuImgUploadBtn" class="easyui-linkbutton" iconCls="icon-save" plain="true">图片上传</a>
+                <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+            </div>
+        </div>
+        <br/><br/>
+        <!---------------- 销售属性列表 ---------------------------->
+        <table id="spuSaleAttrDg" class="easyui-datagrid" title="销售属性列表"
+               data-options="singleSelect:true,method:'get',toolbar:'#spuSaleAttrTootbar'">
+        </table>
+        <!---------------- 销售属性列表工具栏 ----------------------->
+        <div id="spuSaleAttrTootbar" style="padding:5px;height:auto">
+            <div style="margin-bottom:5px;">
+                <a href="#" id="spuSaleAttrAddBtn" class="easyui-linkbutton" iconCls="icon-add"
+                   onclick="addSpuSaleAttr()" plain="true">添加销售属性</a>
+                <a href="#" id="spuSaleAttrEditBtn" class="easyui-linkbutton" iconCls="icon-edit" plain="true"
+                   onclick="editSpuSaleAttr() ">编辑销售属性</a>
+                <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+            </div>
+        </div>
+
+    </form>
+</div>
+<div id="spuBtns">
+    <a href="#" class="easyui-linkbutton" onclick="saveSpu()">保存</a>
+    <a href="#" class="easyui-linkbutton" onclick="closeSpu()">关闭</a>
+</div>
+</body>
+
+<div th:include="spuSaleAttrPage"></div>
+
+<script language="JavaScript">
+
+    function editSpuSaleAttr() {
+
+    }
+
+    function addSpuSaleAttr() {
+        initSpuSaleAttrDlg();
+    }
+
+    function saveSpu() {
+
+    }
+
+    function closeSpu() {
+
+    }
+
+    function initSpuInfoDlg() {
+
+        //1.初始化表单
+        initSpuForm();
+
+        //2.初始化商品图片列表
+        initSpuImgListDatagrid();
+
+        //3.初始化上传控件
+        initUploader();
+
+        //4.初始化销售属性列表
+        initSpuSaleAttrListDatagrid();
+
+    }
+
+    function initSpuForm() {
+        $("#spuForm").form("clear");
+    }
+
+
+    function initSpuImgListDatagrid() {
+        $('#spuImgDg').datagrid('loadData', {total: 0, rows: []});
+        $("#spuImgDg").datagrid({
+            columns: [[
+                {field: 'id', title: '编号', width: '20%'},
+                {
+                    field: 'valueName', title: '属性值名称', width: '80%',
+                    editor: {
+                        type: 'validatebox', options: {required: true}  //必填项
+                    }
+                }
+            ]]
+
+        });
+    }
+
+    function initUploader() {
+
+    }
+
+    function initSpuSaleAttrListDatagrid() {
+        $('#spuSaleAttrDg').datagrid('loadData', {total: 0, rows: []});
+        $("#spuSaleAttrDg").datagrid({
+            idField: 'saleAttrId',
+            columns: [[
+                {field: 'id', title: 'id', hidden: true},
+                {field: 'saleAttrId', title: '销售属性ID', width: "25%"},
+                {field: 'saleAttrName', title: '销售属性名称', width: "25%"},
+                {field: 'spuSaleAttrValueJson', title: '销售属性值缓存', width: "50%"},
+            ]]
+        });
+    }
+
+
+</script>
+
+
+</html>
