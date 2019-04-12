@@ -66,6 +66,10 @@
 <script language="JavaScript">
 
     function addSpuInfo() {
+
+        var catalog3Id = $("#ctg3ForSpuList").combobox("getValue");
+        if(!catalog3Id) return $.messager.alert("提示","请选择三级分类","info");
+
         $('#spu_dlg').dialog("open");
 
         initSpuInfoDlg();

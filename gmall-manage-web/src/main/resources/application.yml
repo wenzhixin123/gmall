@@ -19,3 +19,13 @@ spring:
 #logging:
 #  level:
 #    root: debug
+
+# tracker 配置文件位置
+tracker:
+  conf:
+    path: /tracker.conf
+
+# 文件下载服务器地址前缀
+fileServer:
+  url: http://10.211.55.5
+

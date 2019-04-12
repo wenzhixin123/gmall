@@ -26,16 +26,16 @@
 <script language="JavaScript">
     function initSpuSaleAttrDlg(spuId,spuSaleAttr) {
         $("#spuSaleAttr_dlg").dialog("open");
-        alert("xxx");
+        // alert("xxx");
         $('#saleAttrSelect').combobox('reset');
-        alert("xxx");
+        // alert("xxx");
         if(spuSaleAttr&&spuSaleAttr.saleAttrId){
             $('#saleAttrSelect').combobox('select',spuSaleAttr.saleAttrId);
         }
         initSpuSaleAttrValueListDatagrid(spuId,spuSaleAttr);
     }
     function initSpuSaleAttrValueListDatagrid(spuId,spuSaleAttr) {
-        alert("xxx");
+        // alert("xxx");
         var spuSaleAttrValueDg = $("#spuSaleAttrValueDg").datagrid({url:""});
         spuSaleAttrValueDg.datagrid('loadData',{total:0,rows:[]});
         spuSaleAttrValueDg.datagrid({

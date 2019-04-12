@@ -4,11 +4,16 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.xinxin.gmall.bean.BaseSaleAttr;
 import com.xinxin.gmall.bean.SpuInfo;
 import com.xinxin.gmall.bean.SpuSaleAttrValue;
+import com.xinxin.gmall.manage.util.UploadUtil;
 import com.xinxin.gmall.service.SpuInfoService;
+import org.csource.common.MyException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -16,6 +21,26 @@ public class SpuManageController {
 
     @Reference
     SpuInfoService spuInfoService;
+
+    @Value("${tracker.conf.path}")
+    String trackerConfPath;
+
+    @Value("${fileServer.url}")
+    String fileServerUrl;
+
+
+    @RequestMapping("/fileUpload")
+    @ResponseBody
+    public String fileUpload(MultipartFile file) throws IOException, MyException {
+
+        String uploadPath = UploadUtil.uploadFile(trackerConfPath, file, file.getOriginalFilename(), fileServerUrl);
+
+        System.out.println(uploadPath);
+
+        return uploadPath;
+    }
+
+
 
     @RequestMapping("spuListPage")
     public String gotoSpuListPage(){
@@ -39,6 +64,11 @@ public class SpuManageController {
         return attrs;
     }
 
-
+    @RequestMapping("saveSpu")
+    @ResponseBody
+    public boolean saveSpu(SpuInfo spuInfo){
+        boolean result = spuInfoService.saveSpu(spuInfo);
+        return result;
+    }
 
 }
