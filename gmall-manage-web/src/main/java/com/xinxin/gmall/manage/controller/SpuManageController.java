@@ -1,9 +1,7 @@
 package com.xinxin.gmall.manage.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.xinxin.gmall.bean.BaseSaleAttr;
-import com.xinxin.gmall.bean.SpuInfo;
-import com.xinxin.gmall.bean.SpuSaleAttrValue;
+import com.xinxin.gmall.bean.*;
 import com.xinxin.gmall.manage.util.UploadUtil;
 import com.xinxin.gmall.service.SpuInfoService;
 import org.csource.common.MyException;
@@ -27,6 +25,33 @@ public class SpuManageController {
 
     @Value("${fileServer.url}")
     String fileServerUrl;
+
+    @RequestMapping("attrInfoList")
+    @ResponseBody
+    public List<BaseAttrInfo> attrInfoList(String catalog3Id){
+
+        List<BaseAttrInfo> baseAttrInfos = spuInfoService.attrInfoList(catalog3Id);
+
+        return baseAttrInfos;
+    }
+
+    @RequestMapping("spuSaleAttrList")
+    @ResponseBody
+    public List<SpuSaleAttr> spuSaleAttrList(String spuId){
+
+        List<SpuSaleAttr> spuSaleAttrs = spuInfoService.spuSaleAttrList(spuId);
+
+        return spuSaleAttrs;
+    }
+
+    @RequestMapping("spuImageList")
+    @ResponseBody
+    public List<SpuImage> spuImageList(String spuId){
+
+        List<SpuImage> spuImages = spuInfoService.spuImageList(spuId);
+
+        return spuImages;
+    }
 
 
     @RequestMapping("/fileUpload")

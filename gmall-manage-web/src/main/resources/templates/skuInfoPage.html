@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+<body>
+    <div id="sku_dlg" class="easyui-dialog" title="编辑sku" style="width:700px;height:520px;" closed="true"
+         data-options="iconCls:'icon-save',resizable:true,modal:false" buttons="#skuBtns">
+        <form id="skuForm"><br/> <label>sku名称:</label>
+            <input id="skuName" name="skuName" class="easyui-textbox" data-options="" style="width:300px;"/>
+            <br/><br/>
+            <label>商品价格:</label>
+            <input id="price" name="price" class="easyui-numberbox" data-options="min:0,precision:2"
+                                        style="width:300px;"/>
+            <br/><br/>
+            <label>商品重量（千克):</label>
+            <input id="weight" name="weight" class="easyui-numberbox"data-options="min:0,precision:2" style="width:300px;"/>
+            <br/><br/>
+            <label>商品规格描述:</label>
+            <input id="skuDesc" name="skuDesc" class="easyui-textbox" data-options="multiline:true" style="width:500px;height:100px"/>
+            <input id="spuIdForSku" name="spuId" type="hidden"/> <input id="skuId" name="id" type="hidden"/>
+            <input id="catalog3IdForSku" name="catalog3Id" type="hidden"/>
+            <br/><br/>
+            <input id="skuInfo" name="skuInfo" type="hidden"/>
+            <div id="attrInfoGroup" title="平台属性" class="easyui-panel" style="padding:5px;"></div>
+            <div id="spuSaleAttrGroup" title="销售属性" class="easyui-panel" style="padding:5px;"></div>
+            <!----------------商品图片列表 ----------------------->
+            <table id="skuImgDg" class="easyui-datagrid" title="商品图片列表" data-options="singleSelect:false,selectOnCheck:false,method:'get'"></table>
+            <br/><br/>             <!-------------->
+        </form>
+    </div> <!----------------弹出框的按钮组----------------------->
+    <div id="skuBtns">
+        <a href="#" class="easyui-linkbutton" onclick="saveSku()">保存</a>
+        <a href="#" class="easyui-linkbutton" onclick="closeSku()">关闭</a>
+    </div>
+</body>
+<script language="JavaScript">
+
+    function saveSku() {
+
+        var skuInfo = {};
+
+        skuInfo["spuId"] = $("#spuIdForSku").val();
+        skuInfo["catalog3Id"] = $("#catalog3IdForSku").val();
+        skuInfo["price"] = $("#price").numberbox("getText");
+        skuInfo["skuName"] = $("#skuName").textbox("getText");
+        skuInfo["weight"] = $("#weight").numberbox("getText");
+        skuInfo["skuDesc"] = $("#skuDesc").numberbox("getText");
+        // skuImageList
+        var skuImgRows = $("#skuImgDg").datagrid("getChecked");
+
+        skuImgDgendEdit();
+        $.each(skuImgRows,function (i,skuImgRow) {
+
+            skuInfo["skuImageList["+i+"].imgName"] = skuImgRow.imgName;
+            skuInfo["skuImageList["+i+"].imgUrl"] = skuImgRow.imgUrl;
+            skuInfo["skuImageList["+i+"].spuImgId"] = skuImgRow.id;
+            skuInfo["skuImageList["+i+"].isDefault"] = skuImgRow.isDefault;
+
+            if(skuImgRow.isDefault == "1"){
+                skuInfo["skuDefaultImg"] = skuImgRow.imgUrl;
+            }
+
+        });
+
+
+        // skuSaleAttrValueList
+        var saleAttrSelects = $("#spuSaleAttrGroup").children("select");
+        $.each(saleAttrSelects,function (i,spuSaleAttr) {
+            var saleAttrId = $(spuSaleAttr).attr("saleAttrId");
+            var spuSaleAttrName = $(spuSaleAttr).attr("spuSaleAttrName");
+
+            var spuSaleAttrValId = $(spuSaleAttr).children("option:selected").val();
+            var spuSaleAttrValName = $(spuSaleAttr).children("option:selected").text();
+
+            skuInfo["skuSaleAttrValueList["+i+"].saleAttrId"] = saleAttrId;
+            skuInfo["skuSaleAttrValueList["+i+"].saleAttrName"] = spuSaleAttrName;
+            skuInfo["skuSaleAttrValueList["+i+"].saleAttrValueId"] = spuSaleAttrValId;
+            skuInfo["skuSaleAttrValueList["+i+"].saleAttrValueName"] = spuSaleAttrValName;
+        });
+
+
+        // skuAttrValueList
+        var attrSelects = $("#attrInfoGroup").children("select");
+        $.each(attrSelects,function (i,attrInfo) {
+            var attrId = $(attrInfo).attr("attrId");
+            var attrValId = $(attrInfo).children("option:selected").val();
+
+            skuInfo["skuAttrValueList["+i+"].attrId"] = attrId;
+            skuInfo["skuAttrValueList["+i+"].valueId"] = attrValId;
+        });
+
+        $.post("/saveSku",skuInfo,function (data) {
+            $("#sku_dlg").dialog("close");
+            $("#skulist_dg").dialog("reload");
+        })
+
+    }
+
+
+    function initSkuInfoDlg(spuId,skuInfo,catalog3Id) {
+
+        $("#sku_dlg").dialog("open");
+
+        initSkuForm(spuId,catalog3Id);
+
+        // loadSkuForm(skuInfo);
+
+        initSkuImgListDatagrid(spuId);
+
+        initSpuSaleAttrGroup(spuId);
+
+        initAttrInfoGroup(catalog3Id);
+
+    }
+
+    function initAttrInfoGroup(catalog3Id) {
+
+        $("#attrInfoGroup").html("");
+        var attrInfoHtml = "";
+        $.get("attrInfoList?catalog3Id=" +catalog3Id,function (data) {
+            if(!data || data.length == 0) return;
+            $.each(data,function (i,attrInfo) {
+
+                attrInfoHtml += "<span>"+attrInfo.attrName+"</span>"+"<select attrId='"+attrInfo.id+"' class='easyui-combobox' style='width: 100px;height: auto'>"
+
+                if(!attrInfo.attrValueList) attrInfoHtml += "";
+                else{
+                    $.each(attrInfo.attrValueList,function (j,attrVal) {
+
+                        attrInfoHtml += "<option value='"+attrVal.id+"'>" + attrVal.valueName + "</option>";
+                    });
+
+                }
+                attrInfoHtml +="</select>";
+            });
+            $("#attrInfoGroup").append($(attrInfoHtml));
+
+        });
+
+
+    }
+
+    function initSpuSaleAttrGroup(spuId) {
+
+        $("#spuSaleAttrGroup").html("");
+        var saleAttrHtml = "";
+        $.get("spuSaleAttrList?spuId=" +spuId,function (data) {
+            if(!data || data.length == 0) return;
+            $.each(data,function (i,saleAttr) {
+
+                saleAttrHtml += "<span>"+saleAttr.saleAttrName+"</span>"+"<select saleAttrId='"+saleAttr.saleAttrId+"' spuSaleAttrName='"+saleAttr.saleAttrName+"' class='easyui-combobox' style='width: 100px;height: auto'>"
+
+                if(!saleAttr.spuSaleAttrValueList) saleAttrHtml += "";
+                else{
+                  $.each(saleAttr.spuSaleAttrValueList,function (j,saleAttrValue) {
+
+                      saleAttrHtml += "<option value='"+saleAttrValue.id+"'>" + saleAttrValue.saleAttrValueName + "</option>";
+                  });
+                }
+                saleAttrHtml +="</select>";
+            });
+            $("#spuSaleAttrGroup").append($(saleAttrHtml));
+
+        });
+
+    }
+
+    
+    function initSkuForm(spuId,catalog3Id) {
+
+        $("#skuForm").form("clear");
+
+        $("#spuIdForSku").val(spuId);
+
+        $("#catalog3IdForSku").val(catalog3Id);
+
+    }
+    function initSkuImgListDatagrid(spuId) {
+
+        $("#skuImgDg").datagrid({url:""});
+        $("#skuImgDg").datagrid("loadData",{total:0,rows:[]});
+
+        skuImgDg = $("#skuImgDg").datagrid({
+            columns:[[
+                {field:"checkFlag",checkbox:true},
+                {field:"id",title:"文件编号",width:"15%"},
+                {field:"imgName",title:"图片简称",width:"30%"},
+                {field:"imgUrl",title:"图片路径",width:"20%",
+                    formatter:function (value,row,index) {
+                        return "<img src='"+row. imgUrl+"' style='width:100px;height:100px;'>";
+                    }
+                },
+                {field:"isDefault",title:"是否默认图片",width:"20%",
+                    editor:{
+                        type:'checkbox',
+                        options:{
+                           on:"1",
+                           off:"0"
+                        }
+                    }
+                }
+
+
+
+            ]],
+            onLoadSuccess:function(){
+                skuImgDgbeginEdit();
+            }
+            // ,onDblClickRow: function (rowIndex, rowData) {
+            //     //双击开启编辑行
+            //     skuImgDg.datagrid("beginEdit", rowIndex);
+            //     //设定当失去焦点时,退出编辑状态
+            //     var imgName = rowData.imgName;
+            //     $("input.datagrid-editable-input").val(imgName).bind("blur", function (evt) {
+            //         skuImgDg.datagrid('endEdit', rowIndex);
+            //     });
+            // }
+        });
+
+        $('#skuImgDg').datagrid({url:'spuImageList?spuId='+spuId});
+    }
+    
+    function skuImgDgbeginEdit() {
+
+        var rows = $("#skuImgDg").datagrid("getRows");
+
+        $.each(rows,function (index,row) {
+            $("#skuImgDg").datagrid("beginEdit",index);
+        });
+        
+    }
+    function skuImgDgendEdit() {
+
+        var rows = $("#skuImgDg").datagrid("getRows");
+
+        $.each(rows,function (index,row) {
+            $("#skuImgDg").datagrid("endEdit",index);
+        });
+
+    }
+    
+    
+</script>

@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.xinxin.gmall.bean.*;
 import com.xinxin.gmall.manage.mapper.*;
 import com.xinxin.gmall.service.SpuInfoService;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -23,6 +24,11 @@ public class SpuInfoServiceImpl implements SpuInfoService {
     @Autowired
     SpuSaleAttrValueMapper spuSaleAttrValueMapper;
 
+    @Autowired
+    BaseAttrInfoMapper baseAttrInfoMapper;
+
+    @Autowired
+    BaseAttrValueMapper baseAttrValueMapper;
 
     @Autowired
     BaseSaleAttrMapper baseSaleAttrMapper;
@@ -74,5 +80,60 @@ public class SpuInfoServiceImpl implements SpuInfoService {
         }
 
         return true;
+    }
+
+    @Override
+    public List<SpuImage> spuImageList(String spuId) {
+
+        SpuImage spuImage = new SpuImage();
+        spuImage.setSpuId(spuId);
+
+        List<SpuImage> spuImages = spuImageMapper.select(spuImage);
+
+        return spuImages;
+    }
+
+    @Override
+    public List<SpuSaleAttr> spuSaleAttrList(String spuId) {
+
+        SpuSaleAttr spuSaleAttr = new SpuSaleAttr();
+        spuSaleAttr.setSpuId(spuId);
+
+        List<SpuSaleAttr> spuSaleAttrs = spuSaleAttrMapper.select(spuSaleAttr);
+        if(CollectionUtils.isNotEmpty(spuSaleAttrs)){
+            for (SpuSaleAttr saleAttr : spuSaleAttrs) {
+
+                SpuSaleAttrValue spuSaleAttrValue = new SpuSaleAttrValue();
+                spuSaleAttrValue.setSpuId(spuId);
+                spuSaleAttrValue.setSaleAttrId(saleAttr.getSaleAttrId());
+
+                List<SpuSaleAttrValue> spuSaleAttrValues = spuSaleAttrValueMapper.select(spuSaleAttrValue);
+
+                saleAttr.setSpuSaleAttrValueList(spuSaleAttrValues);
+            }
+        }
+
+        return spuSaleAttrs;
+    }
+
+    @Override
+    public List<BaseAttrInfo> attrInfoList(String catalog3Id) {
+
+        BaseAttrInfo baseAttrInfo = new BaseAttrInfo();
+        baseAttrInfo.setCatalog3Id(catalog3Id);
+
+        List<BaseAttrInfo> baseAttrInfos = baseAttrInfoMapper.select(baseAttrInfo);
+        if(CollectionUtils.isNotEmpty(baseAttrInfos)){
+            for (BaseAttrInfo baseAttr : baseAttrInfos) {
+
+               BaseAttrValue baseAttrValue = new BaseAttrValue();
+               baseAttrValue.setAttrId(baseAttr.getId());
+
+                List<BaseAttrValue> baseAttrValues = baseAttrValueMapper.select(baseAttrValue);
+                baseAttr.setAttrValueList(baseAttrValues);
+            }
+        }
+
+        return baseAttrInfos;
     }
 }

@@ -29,7 +29,7 @@
                 <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editSpuInfo()">编辑</a>
                 <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
                 <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="addSkuInfo()">增加sku</a>
-                <a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="showSkuInfoList()">
+                <a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="spuInfoList()">
                     sku列表</a>
             </div>
             <div>
@@ -60,10 +60,34 @@
 <!---->
 </body>
 <div th:include="spuInfoPage"></div>
+<div th:include="skuListPage"></div>
+<div th:include="skuInfoPage"></div>
 <!--<div th:include="spuSaleAttrPage"></div>-->
 <!--<div th:include="attrInfoPage"></div>-->
 
 <script language="JavaScript">
+
+    function addSkuInfo() {
+        // alert("xx");
+        var spuRow = $("#spulist_dg").datagrid("getSelected");
+       if(!spuRow) return $.messager.alert("提示","请选择SPU数据进行新增SKU","info");
+
+       var spuId = spuRow.id;
+       var catalog3Id = spuRow.catalog3Id;
+
+        initSkuInfoDlg(spuId,"",catalog3Id);
+    }
+
+    function spuInfoList() {
+
+        var selectedSpu = $("#spulist_dg").datagrid("getSelected");
+        if(!selectedSpu) return $.messager.alert("提示","请选择一条SPU进行查看SKU列表","info");
+
+        var catalog3Id = $("#ctg3ForSpuList").combobox("getValue");
+        if(!catalog3Id) return $.messager.alert("提示","请选择三级分类ID进行操作!","info");
+
+        initSkuListDlg(selectedSpu.id,catalog3Id);
+    }
 
     function addSpuInfo() {
 
