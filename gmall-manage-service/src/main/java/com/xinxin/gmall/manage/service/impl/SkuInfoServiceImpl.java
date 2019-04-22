@@ -1,10 +1,7 @@
 package com.xinxin.gmall.manage.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.xinxin.gmall.bean.SkuAttrValue;
-import com.xinxin.gmall.bean.SkuImage;
-import com.xinxin.gmall.bean.SkuInfo;
-import com.xinxin.gmall.bean.SkuSaleAttrValue;
+import com.xinxin.gmall.bean.*;
 import com.xinxin.gmall.manage.mapper.SkuAttrValueMapper;
 import com.xinxin.gmall.manage.mapper.SkuImageMapper;
 import com.xinxin.gmall.manage.mapper.SkuInfoMapper;
@@ -77,4 +74,32 @@ public class SkuInfoServiceImpl implements SkuInfoService {
 
         return true;
     }
+
+    @Override
+    public SkuInfo getSkuInfo(String skuId) {
+        SkuInfo skuInfo = skuInfoMapper.selectByPrimaryKey(skuId);
+        if(skuInfo == null) return null;
+
+        SkuImage skuImage = new SkuImage();
+        skuImage.setSkuId(skuId);
+        List<SkuImage> skuImages = skuImageMapper.select(skuImage);
+
+        SkuSaleAttrValue skuSaleAttrValue = new SkuSaleAttrValue();
+        skuSaleAttrValue.setSkuId(skuId);
+        List<SkuSaleAttrValue> skuSaleAttrValues = skuSaleAttrValueMapper.select(skuSaleAttrValue);
+
+        skuInfo.setSkuImageList(skuImages);
+        skuInfo.setSkuSaleAttrValueList(skuSaleAttrValues);
+
+
+        return skuInfo;
+    }
+
+    @Override
+    public List<SkuInfo> getSkuSaleAttrValueListBySpu(String spuId) {
+
+        List<SkuInfo> skuInfos = skuSaleAttrValueMapper.selectSkuSaleAttrValueListBySpu(Long.parseLong(spuId));
+        return skuInfos;
+    }
+
 }

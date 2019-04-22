@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xinxin.gmall.manage.mapper.SpuSaleAttrMapper">
+    <select  id ="selectSpuSaleAttrListCheckBySku"   resultMap="spuSaleAttrMap">
+     SELECT
+        SSA.ID ssaId,ssav.id ssavId, SSA.sale_attr_name ,SSAV.sale_attr_value_name ,if(sku_sav.sku_id is not null,'1','0') isChecked
+        FROM
+          spu_sale_attr SSA
+        inner join spu_sale_attr_value SSAV
+        on SSA.sale_attr_id = SSAV.sale_attr_id
+        AND SSA.spu_id = #{spuId}
+        left join sku_sale_attr_value sku_sav
+        on ssa.sale_attr_id = sku_sav.sale_attr_id
+        and ssav.id = sku_sav.sale_attr_value_id
+        and sku_sav.sku_id =#{skuId}
+        order by ssav.sale_attr_id,ssav.id
+     </select>
+
+    <resultMap id="spuSaleAttrMap" type="com.xinxin.gmall.bean.SpuSaleAttr" autoMapping="true">
+        <result property="id" column="ssaId" ></result>
+        <collection property="spuSaleAttrValueList" javaType="ArrayList" ofType="com.xinxin.gmall.bean.SpuSaleAttrValue" autoMapping="true">
+            <result property="id" column="ssavId"></result>
+        </collection>
+    </resultMap>
+
+</mapper>

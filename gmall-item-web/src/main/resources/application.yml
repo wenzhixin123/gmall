@@ -1,0 +1,22 @@
+spring:
+  dubbo:
+    application:
+      name: gmall-item-web
+    base-package:  com.xinxin.gmall
+    registry:
+      protocol: zookeeper
+      address: 10.211.55.5:2181
+    protocol: dubbo
+    consumer:
+      timeout: 600000
+      check: false
+
+  thymeleaf:
+    cache: false
+    mode: LEGACYHTML5
+server:
+  port: 8082
+#logging:
+#  level:
+#    root: debug
+
